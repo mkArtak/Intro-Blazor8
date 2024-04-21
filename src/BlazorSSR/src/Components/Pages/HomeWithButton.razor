@@ -1,0 +1,20 @@
+﻿@page "/button"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+<button @onclick="Trigger">Click Me</button>
+
+Welcome to your new app.
+
+@outputText
+
+@code {
+    private string outputText = string.Empty;
+
+    public void Trigger()
+    {
+        outputText = "Clicked";
+    }
+}

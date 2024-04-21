@@ -1,0 +1,49 @@
+﻿@using System.Text
+
+<h3>Lifecycle</h3>
+
+@for (var i = 0; i < stages.Count; i++)
+{
+    @stages[i]
+    <br />
+}
+
+@code {
+    private List<string> stages = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        AppendStageInfo("OnInitialized");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        AppendStageInfo("OnInitializedAsync");
+    }
+
+    protected override void OnParametersSet()
+    {
+        AppendStageInfo("OnParametersSet");
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        AppendStageInfo("OnParametersSetAsync");
+    }
+
+    /// QUESTION: Why isn't OnAfterRender called
+    protected override void OnAfterRender(bool firstRender)
+    {
+        AppendStageInfo("OnAfterRender");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        AppendStageInfo("OnAfterRenderAsync");
+    }
+
+    private void AppendStageInfo(string stage) => stages.Add(stage);
+}
