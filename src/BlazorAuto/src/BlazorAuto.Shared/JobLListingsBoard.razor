@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Components.QuickGrid
+@using BlazorAuto.Shared.Services
+
+@inject IJobListingsService jobService
+
+<div class="my-component">
+    <QuickGrid Items="_jobs">
+        <PropertyColumn Property="@(j=>j.Id)" />
+        <PropertyColumn Property="@(j=>j.DatePosted)" />
+        <PropertyColumn Property="@(j=>j.Category)" />
+        <PropertyColumn Property="@(j=>j.Title)" />
+    </QuickGrid>
+
+</div>
+
+@code {
+    private IQueryable<JobListing> _jobs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var jobs = await jobService.GetActiveJobListingsAsync();
+        _jobs = jobs.AsQueryable();
+    }
+}
