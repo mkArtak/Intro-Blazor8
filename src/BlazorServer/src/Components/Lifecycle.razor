@@ -43,6 +43,9 @@
     {
         await base.OnAfterRenderAsync(firstRender);
         AppendStageInfo("OnAfterRenderAsync");
+
+        if (firstRender)
+            this.StateHasChanged();
     }
 
     private void AppendStageInfo(string stage) => stages.Add(stage);
