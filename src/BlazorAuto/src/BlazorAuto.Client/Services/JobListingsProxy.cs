@@ -20,13 +20,17 @@ public class JobListingsProxy : IJobListingsService
         return jobs;
     }
 
-    public Task<int> PostJobListyingAsync(JobListing listing)
+    public async Task<int> PostJobListyingAsync(JobListing listing)
     {
-        throw new NotImplementedException();
+        var response = await _client.PostAsJsonAsync<JobListing>("jobs", listing);
+        var id = await response.Content.ReadFromJsonAsync<int>();
+        return id;
     }
 
-    public Task<List<JobListing>> SearchJobListingsAsync(string keyword)
+    public async Task<List<JobListing>> SearchJobListingsAsync(string keyword)
     {
-        throw new NotImplementedException();
+        var jobs = await _client.GetFromJsonAsync<List<JobListing>>($"jobs/{keyword}");
+
+        return jobs;
     }
 }

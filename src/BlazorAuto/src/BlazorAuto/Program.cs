@@ -44,7 +44,13 @@ List<JobListing> allListings = new List<JobListing> {
 
 app.MapGet("/jobs", () => allListings);
 app.MapGet("/jobs/{key}", (string key) => allListings.Where(listing => listing.Title.Contains(key, StringComparison.InvariantCultureIgnoreCase)));
-app.MapPost("/jobs", (JobListing listing) => allListings.Add(listing));
+app.MapPost("/jobs", (JobListing listing) =>
+{
+    listing.DatePosted = DateTime.UtcNow;
+    listing.Id = allListings.Count;
+    allListings.Add(listing);
+    return listing.Id;
+});
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

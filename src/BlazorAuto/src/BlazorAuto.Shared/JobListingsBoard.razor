@@ -10,17 +10,25 @@
         <PropertyColumn Property="@(j=>j.Category)" />
         <PropertyColumn Property="@(j=>j.Title)" />
     </QuickGrid>
-
+    <div class="filter">
+        <input type="text" @bind="_filter" @bind:event="oninput" @bind:after="UpdateFilter" />
+    </div>
 </div>
 
 @code {
     private IQueryable<JobListing> _jobs;
+    private string? _filter;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        var jobs = await jobService.GetActiveJobListingsAsync();
+        await UpdateFilter();
+    }
+
+    private async Task UpdateFilter()
+    {
+        var jobs = string.IsNullOrEmpty(_filter) ? await jobService.GetActiveJobListingsAsync() : await jobService.SearchJobListingsAsync(_filter);
         _jobs = jobs.AsQueryable();
     }
 }
