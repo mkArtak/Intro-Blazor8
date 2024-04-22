@@ -1,21 +1,60 @@
 ﻿@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.AspNetCore.Components.Forms
 @using BlazorAuto.Shared.Services
 
 @inject IJobListingsService jobService
 
-<div class="my-component">
-    <QuickGrid Items="_jobs">
-        <PropertyColumn Property="@(j=>j.Id)" />
-        <PropertyColumn Property="@(j=>j.DatePosted)" />
-        <PropertyColumn Property="@(j=>j.Category)" />
-        <PropertyColumn Property="@(j=>j.Title)" />
-    </QuickGrid>
-    <div class="filter">
+<div class="job-board">
+    <div class="search">
+        <span>Search jobs: </span
         <input type="text" @bind="_filter" @bind:event="oninput" @bind:after="UpdateFilter" />
+    </div>
+    <div>
+        <QuickGrid Items="_jobs" Pagination="_pagination">
+            <PropertyColumn Property="@(j=>j.Id)" />
+            <PropertyColumn Property="@(j=>j.DatePosted)" />
+            <PropertyColumn Property="@(j=>j.Category)" />
+            <PropertyColumn Property="@(j=>j.Title)" />
+        </QuickGrid>
+    </div>
+    <div>
+        <Paginator State="_pagination" />
     </div>
 </div>
 
+<button @onclick="()=>_addNew = !_addNew">Create listing</button>
+
+@if (_addNew)
+{
+    <div class="job-board">
+        <EditForm Model="_newJobListing" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <InputText id="category" class="form-control" @bind-Value="_newJobListing.Category" />
+            </div>
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <InputText id="title" class="form-control" @bind-Value="_newJobListing.Title" />
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <InputTextArea id="description" class="form-control" @bind-Value="_newJobListing.Description" />
+            </div>
+            <br />
+            <div>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </EditForm>
+    </div>
+}
+
 @code {
+    private bool _addNew = false;
+    private PaginationState _pagination = new PaginationState { ItemsPerPage = 4 };
+    private JobListing _newJobListing = new JobListing();
+
     private IQueryable<JobListing> _jobs;
     private string? _filter;
 
@@ -30,5 +69,12 @@
     {
         var jobs = string.IsNullOrEmpty(_filter) ? await jobService.GetActiveJobListingsAsync() : await jobService.SearchJobListingsAsync(_filter);
         _jobs = jobs.AsQueryable();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await jobService.PostJobListyingAsync(_newJobListing);
+
+        _addNew = false;
     }
 }
